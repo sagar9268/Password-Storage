@@ -1,10 +1,9 @@
 package com.nitsilchar.hp.passwordStorage.activity;
 
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -13,21 +12,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.nitsilchar.hp.passwordStorage.database.PasswordDatabase;
 import com.nitsilchar.hp.passwordStorage.R;
+import com.nitsilchar.hp.passwordStorage.database.PasswordDatabase;
 
 import io.fabric.sdk.android.Fabric;
 
 public class DetailsActivity extends AppCompatActivity {
     TextView site_name,site_pass;
     PasswordDatabase db;
-    Button display;
     EditText password;
     Button modify;
+    Button showPassword;
     String getPass,s;
     String newPassword,pass;
     int getUpdate;
-    CardView cardView1,cardView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +37,15 @@ public class DetailsActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
         site_name=(TextView)findViewById(R.id.displaySiteTextId);
         site_pass=(TextView)findViewById(R.id.displaySitePassId);
-        display=(Button)findViewById(R.id.displayButton);
-        display.setVisibility(View.VISIBLE);
         modify=(Button)findViewById(R.id.modifyButton);
-        cardView1=(CardView)findViewById(R.id.card1);
-        cardView2=(CardView)findViewById(R.id.card2);
+        showPassword = (Button) findViewById(R.id.showpassword);
         modify.setVisibility(View.INVISIBLE);
-        cardView2.setVisibility(View.INVISIBLE);
+        showPassword.setVisibility(View.VISIBLE);
         s=getIntent().getStringExtra("Site");
         pass=db.getData(s);
-        site_name.setText("Account : "+s);
-        site_pass.setText("Password : **********");
-        getPass= SplashActivity.sh.getString("password", null);
+        site_name.setText(s);
+        site_pass.setText("**********");
+
         modify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,7 +64,7 @@ public class DetailsActivity extends AppCompatActivity {
                         getUpdate=db.modifyCredentials(s,newPassword);
                         if (getUpdate==1) {
                             dialog.dismiss();
-                            site_pass.setText("Password : "+newPassword);
+                            site_pass.setText(newPassword);
                         }
                     }
                 });
@@ -83,10 +78,11 @@ public class DetailsActivity extends AppCompatActivity {
                 b.show();
             }
         });
-        display.setOnClickListener(new View.OnClickListener() {
+        showPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                getPass= SplashActivity.sh.getString("password", null);
                 AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(DetailsActivity.this);
                 LayoutInflater inflater=DetailsActivity.this.getLayoutInflater();
                 final View dialogView=inflater.inflate(R.layout.details_dialog,null);
@@ -98,11 +94,9 @@ public class DetailsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(getPass.equals(password.getText().toString())){
-                            site_pass.setText("Password : "+pass);
+                            site_pass.setText(pass);
                             modify.setVisibility(View.VISIBLE);
-                            cardView2.setVisibility(View.VISIBLE);
-                            display.setVisibility(View.INVISIBLE);
-                            cardView1.setVisibility(View.INVISIBLE);
+                            showPassword.setVisibility(View.INVISIBLE);
                             dialog.dismiss();
                         }
                         else{
